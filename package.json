@@ -1,0 +1,31 @@
+{
+  "name": "nem-quiz-app-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jameelsocorro/nem-quiz-app-api.git"
+  },
+  "author": "Jameel Socorro",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jameelsocorro/nem-quiz-app-api/issues"
+  },
+  "homepage": "https://github.com/jameelsocorro/nem-quiz-app-api#readme",
+  "dependencies": {
+    "bcrypt-nodejs": "^0.0.3",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "knex": "^0.16.3",
+    "pg": "^7.8.0"
+  },
+  "devDependencies": {
+    "dotenv": "^6.2.0",
+    "nodemon": "^1.18.9"
+  }
+}
