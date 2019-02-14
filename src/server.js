@@ -8,15 +8,30 @@ const knex = require('knex');
 
 const users = require('./controllers/users')
 
-const db = knex({
-    client: 'pg',
-    connection: {
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME
-    }
-});
+let db = null;
+
+switch (process.env.NODE_ENV) {
+    case 'staging':
+        db = knex({
+            client: 'pg',
+            connection: {
+                connectionString: process.env.DATABASE_URL,
+                ssl: true
+            }
+        });
+        break;
+    default:
+        db = knex({
+            client: 'pg',
+            connection: {
+                host: process.env.DB_HOST,
+                user: process.env.DB_USER,
+                password: process.env.DB_PASSWORD,
+                database: process.env.DB_NAME
+            }
+        });
+        break;
+}
 
 const app = express();
 
