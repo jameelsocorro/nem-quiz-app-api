@@ -7,6 +7,7 @@ const cors = require('cors');
 const knex = require('knex');
 
 const users = require('./controllers/users')
+const quiz = require('./controllers/quiz')
 
 const db = knex({
     client: 'pg',
@@ -30,6 +31,10 @@ app.get('/', (req, res) => {
 //USERS
 app.post('/users/signin', (req, res) => { users.signIn(req, res, db, bcrypt) });
 app.post('/users/register', (req, res) => { users.register(req, res, db, bcrypt) });
+
+//QUIZ
+app.post('/quiz/getQuizzes', (req, res) => { quiz.getQuizzes(req, res, db) });
+app.post('/quiz/getQuizItems', (req, res) => { quiz.getQuizItems(req, res, db) });
 
 app.listen(process.env.PORT, () => {
     console.log(`app is running on port ${process.env.PORT}`);
