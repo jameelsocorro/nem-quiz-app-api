@@ -7,60 +7,67 @@ module.exports = {
                 res.json(quizzes)
             }).catch(err => res.status(400).json('unable to get quizzes'))
     },
-    getQuizItems: (req, res, db) => {
-        return db.select('*').from('quizitem')
-            .then(quizItems => {
-                res.json(quizItems)
-            }).catch(err => res.status(400).json('unable to get quiz item'))
-    },
-    getQuizItemById: (req, res, db) => {
-        const { quizId } = req.body;
-        return db.select('*').from('quizItem')
-            .where('quizId', '=', quizId)
-            .then(quizItem => {
-                res.json(quizItem)
-            }).catch(err => res.status(400).json('unable to get quiz item'))
-    },
-    getQuizItemOptions: (req, res, db) => {
-        const { includeId } = req.body;
-        return db.select('*').from('quizItemOption')
-            .then(quizItemOptions => {
-                if (includeId) {
-                    res.json(quizItemOptions)
-                } else {
-                    res.json(quizItemOptions.map(item => {
-                        return {
-                            key: item.key,
-                            description: item.description
-                        }
-                    }))
-                }
 
-            }).catch(err => res.status(400).json('unable to get quiz item option'))
+    getQuizSummaries: (req, res, db) => {
+        db.select('*')
+            .from('quizsummary')
+            .join('users', 'quizsummary.userid', '=', 'users.userid')
+            .then(quizSummaries => {
+                if (quizSummaries && quizSummaries.length > 0) {
+                    res.json(quizSummaries);
+                }
+                else {
+                    res.json(null);
+                }
+            })
+            .catch(err => res.status(400).json('unable to get data from quiz summary'))
     },
-    getQuizItemOptionsByKey: (req, res, db) => {
-        const { key } = req.body;
-        return db.select('*').from('quizItemOption')
-            .where('key', '=', itemOptionId)
-            .then(quizItemOption => {
-                res.json(quizItemOption)
-            }).catch(err => res.status(400).json('unable to get quiz item option'))
-    },
-    getUserQuiz: (req, res, db) => {
-        const { quizId, quizItemId } = req.body;
-        return db.select('*').from('userQuiz')
-            .where('quizItemId', '=', quizItemId && 'quizId', '=', quizId)
-            .then(userQuiz => {
-                res.json(userQuiz)
-            }).catch(err => res.status(400).json('unable to get user quiz'))
-    },
+
     getQuizSummary: (req, res, db) => {
-        const { userId, quizId } = req.body;
-        return db.select('*').from('quizSummary')
-            .where('userId', '=', userId && 'quizId', '=', quizId)
+        const { userid, quizid } = req.params;
+        if (!userid || !quizid) {
+            return res.status(400).json('userid and quizid is required');
+        }
+        db.select('*')
+            .from('quizsummary')
+            .where('userid', '=', userid, 'quizid', '=', quizid)
+            .join('quiz', 'quizsummary.quizid', '=', 'quiz.quizid')
             .then(quizSummary => {
-                res.json(quizSummary)
-            }).catch(err => res.status(400).json('unable to get quiz summary'))
+                if (quizSummary && quizSummary.length > 0) {
+                    res.json(quizSummary[0]);
+                }
+                else {
+                    res.json(null);
+                }
+            })
+            .catch(err => res.status(400).json('unable to get data from quiz summary'))
+    },
+
+    generateQuizSummary: (req, res, db) => {
+        const { userid, quizid } = req.body;
+
+        return db.select('*').from('userquiz')
+            .where('userid', '=', userid, 'quizid', '=', quizid)
+            .then(userQuizzes => {
+
+                const correctItems = userQuizzes.filter(m => m.correct);
+
+                db.transaction(trx => {
+                    trx.insert({
+                        userid,
+                        quizid,
+                        score: correctItems.length
+                    })
+                    .into('quizsummary')
+                    .then(() => {
+                        res.json(true);
+                    })
+                    .then(trx.commit)
+                    .catch(trx.rollback)
+                })
+                .catch(err => res.status(400).json('unable to generate quiz summary'));
+
+            }).catch(err => res.status(400).json('unable to get user quizzes'))
     },
 
 }

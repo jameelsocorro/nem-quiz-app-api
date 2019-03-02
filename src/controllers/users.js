@@ -44,7 +44,7 @@ module.exports = {
                             email: loginEmail[0],
                             firstname: firstname,
                             lastname: lastname,
-                            nem_address: nemAddress,
+                            nemaddress: nemAddress,
                             joined: new Date()
                         })
                         .then(user => {
@@ -54,7 +54,7 @@ module.exports = {
                 .then(trx.commit)
                 .catch(trx.rollback)
         })
-        .catch(err => res.status(400).json('unable to register'))
+        .catch(err => res.status(400).json('unable to register'));
     }
 
 }
