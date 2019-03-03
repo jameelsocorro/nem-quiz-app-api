@@ -183,8 +183,7 @@ module.exports = {
             .then(quizAnswers => {
 
                 //TODO multi answers support
-                const quizAnswer = quizAnswers[0];
-                console.log(quizAnswer);
+                const quizAnswer = (quizAnswers && quizAnswers.length > 0) ? quizAnswers[0] : quizAnswers;
 
                 db.transaction(trx => {
                     trx.update({
