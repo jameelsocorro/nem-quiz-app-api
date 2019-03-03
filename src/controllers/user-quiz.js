@@ -190,7 +190,7 @@ module.exports = {
 
                 db.transaction(trx => {
                     trx.update({
-                        useranswer,
+                        useranswer: useranswer.toString(),
                         correct: quizAnswer.quizitemid === quizitemid
                     })
                         .into('userquiz')
