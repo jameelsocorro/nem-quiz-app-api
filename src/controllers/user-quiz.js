@@ -184,6 +184,7 @@ module.exports = {
 
                 //TODO multi answers support
                 const quizAnswer = quizAnswers[0];
+                console.log(quizAnswer);
 
                 db.transaction(trx => {
                     trx.update({
